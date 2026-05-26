@@ -1,0 +1,46 @@
+services:
+  # Backend API Service
+  - type: web
+    name: gospel-tune-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+    disk:
+      name: audio-storage
+      mountPath: /data/audio
+      sizeGB: 10
+
+  # Frontend Static Site
+  - type: web
+    name: gospel-tune-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: |-
+      npm ci --legacy-peer-deps
+      npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: VITE_API_URL
+        fromService:
+          name: gospel-tune-backend
+          type: web
+          property: url
+          value: /api
+    buildFilter:
+      paths:
+      - frontend/**
+      - render.yaml
