@@ -5,7 +5,7 @@
             "framework": "vite"
         },
         "backend": {
-            "entrypoint": "backend/server.js",  // Change to your actual filename
+            "entrypoint": "backend/server.js", 
             "routePrefix": "/_/backend"
         }
     }
