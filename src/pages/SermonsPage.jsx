@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import apiClient from '../store/api/apiClient'
 import { BookOpenIcon } from '@heroicons/react/24/outline'
-<<<<<<< HEAD
 import SermonCard from '../components/Sermons/SermonCard.jsx'
-=======
-import SermonCard from "../components/Sermons/SermonCard";
->>>>>>> cb1c66654e9cbd9110395978db3b848fd2f9133b
 
 const SermonsPage = () => {
   const [sermons, setSermons] = useState([])
