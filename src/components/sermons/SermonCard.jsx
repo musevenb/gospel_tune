@@ -7,34 +7,48 @@ const SermonCard = ({ sermon, isLiked = false }) => {
   const navigate = useNavigate()
 
   const handleCardClick = () => {
-    // Navigate to the player page for sermons
-    navigate(`/player/sermon/${sermon._id}`)
+    if (sermon?._id) {
+      navigate(`/player/sermon/${sermon._id}`)
+    }
   }
 
   const handleLike = (e) => {
     e.stopPropagation()
-    // Add like functionality here
-    console.log('Like sermon:', sermon._id)
+    if (sermon?._id) {
+      console.log('Like sermon:', sermon._id)
+      // Add your like API call here
+    }
   }
 
-  const handleShare = (e) => {
+  const handleShare = async (e) => {
     e.stopPropagation()
-    if (navigator.share) {
-      navigator.share({
-        title: sermon.title,
-        text: `Listen to "${sermon.title}" by ${sermon.preacher} on Gospel Tune`,
-        url: window.location.origin + `/player/sermon/${sermon._id}`
-      })
-    } else {
-      navigator.clipboard.writeText(window.location.origin + `/player/sermon/${sermon._id}`)
-      alert('Link copied to clipboard!')
+    const shareUrl = window.location.origin + `/player/sermon/${sermon?._id}`
+    const shareTitle = sermon?.title || 'Sermon'
+    const shareText = `Listen to "${shareTitle}" by ${sermon?.preacher || 'Gospel Tune'} on Gospel Tune`
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl
+        })
+      } else {
+        await navigator.clipboard.writeText(shareUrl)
+        alert('Link copied to clipboard!')
+      }
+    } catch (error) {
+      console.error('Error sharing:', error)
     }
+  }
+
+  if (!sermon) {
+    return null
   }
 
   const isPending = sermon.status === 'pending'
   const isRejected = sermon.status === 'rejected'
 
-  // Map sermon type to icon
   const typeIcon = {
     sermon: '🙏',
     documentary: '🎬',
@@ -51,7 +65,7 @@ const SermonCard = ({ sermon, isLiked = false }) => {
       <div className="relative">
         <img
           src={sermon.thumbnail || 'https://via.placeholder.com/300x200?text=Sermon'}
-          alt={sermon.title}
+          alt={sermon.title || 'Sermon'}
           className="w-full h-48 object-cover"
           onError={(e) => {
             e.target.src = 'https://via.placeholder.com/300x200?text=Sermon'
@@ -62,7 +76,7 @@ const SermonCard = ({ sermon, isLiked = false }) => {
         </div>
         <div className="absolute top-2 right-2">
           <span className="bg-black/70 text-xs px-2 py-1 rounded-full">
-            {typeIcon[sermon.type] || '📖'} {sermon.type?.replace('_', ' ')}
+            {typeIcon[sermon.type] || '📖'} {sermon.type?.replace('_', ' ') || 'Sermon'}
           </span>
         </div>
         {isPending && (
@@ -78,9 +92,9 @@ const SermonCard = ({ sermon, isLiked = false }) => {
       </div>
       
       <div className="p-4">
-        <h3 className="text-xl font-bold mb-2 line-clamp-2">{sermon.title}</h3>
-        <p className="text-gospel-gold text-sm mb-2">by {sermon.preacher}</p>
-        <p className="text-gray-300 text-sm mb-3 line-clamp-2">{sermon.description}</p>
+        <h3 className="text-xl font-bold mb-2 line-clamp-2">{sermon.title || 'Untitled'}</h3>
+        <p className="text-gospel-gold text-sm mb-2">by {sermon.preacher || 'Unknown'}</p>
+        <p className="text-gray-300 text-sm mb-3 line-clamp-2">{sermon.description || 'No description available'}</p>
         
         {sermon.songId && (
           <div className="mb-3 p-2 bg-gospel-purple/20 rounded-lg">
