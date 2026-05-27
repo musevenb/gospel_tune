@@ -1,12 +1,26 @@
 {
-    "experimentalServices": {
-        "frontend": {
-            "routePrefix": "/",
-            "framework": "vite"
-        },
-        "backend": {
-            "root": "backend",
-            "routePrefix": "/_/backend"
-        }
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
+  ],
+  "env": {
+    "VITE_API_URL": "https://your-backend.onrender.com/api"
+  },
+  "build": {
+    "env": {
+      "NODE_VERSION": "24.x"
+    }
+  },
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs24.x"
+    }
+  }
 }
